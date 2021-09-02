@@ -90,6 +90,10 @@ ETHERSCAN_API_KEY = os.getenv(
     'ETHERSCAN_API_KEY',
     'TGXU5WGVTVYRDDV2MY71R5JYB7147M13FC'
 )
+INTERFACES_DIR = os.getenv(
+    'INTERFACES_DIR',
+    '../interfaces'
+)
 
 
 def create_executor_id(id):
@@ -149,6 +153,13 @@ def decode_evm_script(
 
     abi_storage = get_abi_cache(ETHERSCAN_API_KEY, specific_net)
 
+    else:
+        abi_provider = ABIProviderCombined(
+            ETHERSCAN_API_KEY,
+            os.path.join(INTERFACES_DIR, abi_spec_json),
+            specific_net=specific_net, retries=3
+        )
+
     calls = []
     called_contracts = defaultdict(lambda: defaultdict(dict))
     for ind, call in enumerate(parsed.calls):
@@ -197,12 +208,12 @@ def decode_evm_script(
     return calls
 
 
-def calls_info_pretty_print(call: Union[str, Call]) -> str:
+def calls_info_pretty_print(call: Optional[Union[str, Call]]) -> str:
     """Format printing for Call instance."""
     if isinstance(call, str):
         return f'Decoding failed: {call}'
 
-    else:
+    elif isinstance(call, Call):
         inputs = '\n'.join([
             f'{inp.name}: {inp.type} = {inp.value}'
             for inp in call.inputs
@@ -213,3 +224,6 @@ def calls_info_pretty_print(call: Union[str, Call]) -> str:
             f'Inputs:\n'
             f'{inputs}'
         )
+
+    else:
+        return f'Unexpected: {repr(call)}'

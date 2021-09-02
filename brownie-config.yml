@@ -10,5 +10,5 @@ networks:
       accounts: 10
       evm_version: istanbul
       mnemonic: brownie
-      fork: https://localhost:9545
-      
+      #      fork: https://localhost:9545
+      fork: https://goerli.infura.io/v3/8487bbcc35f94f4c92187606125f3d60

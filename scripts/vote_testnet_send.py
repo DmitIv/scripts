@@ -2,11 +2,10 @@
 Vote with test transaction on goerli.
 """
 import os
-import sys
 import time
 from typing import Tuple
 
-from brownie import accounts
+from brownie import accounts, network
 
 from utils.voting import create_vote
 from utils.evm_script import (
@@ -20,7 +19,7 @@ from utils.config_goerli import (
     lido_dao_token_manager_address
 )
 from utils.config import (
-    prompt_bool
+    prompt_bool, get_deployer_account
 )
 from utils.finance import encode_eth_transfer
 
@@ -100,7 +99,7 @@ def start_vote(tx_params, silent=False):
         while resume is None:
             resume = prompt_bool()
         if not resume:
-            sys.exit(1)
+            return -1, None
 
     return create_vote(
         voting=voting,
@@ -117,17 +116,19 @@ def start_vote(tx_params, silent=False):
 
 
 def main():
-    deployer = accounts.at(
-        os.getenv(
-            'DEPLOYER',
-            '0xc4AB398EFE38800Aab46493C31845377Bd6b9bc6'
-        ),
-        force=True
-    )
+    # deployer = accounts.at(
+    #     os.getenv(
+    #         'DEPLOYER',
+    #         '0xc4AB398EFE38800Aab46493C31845377Bd6b9bc6'
+    #     ),
+    #     force=True
+    # )
+    deployer = get_deployer_account()
     print(f'Deployer: {deployer.address}.')
+    print(f'Active network: {network.show_active()}')
     vote_id, _ = start_vote({
         'from': deployer,
-        'gas_price': '50 gwei'
+        'gas_price': '200 gwei'
     })
     print(f'Vote created: {vote_id}')
 
