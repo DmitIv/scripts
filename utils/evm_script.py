@@ -1,14 +1,14 @@
-import os
 import logging
 
 from functools import lru_cache
 from typing import List, Union, Optional
 from collections import defaultdict
+from typing import List, Union, Optional
 
 import eth_abi
-from web3 import Web3
-from eth_typing.evm import HexAddress
 from brownie.utils import color
+from eth_typing.evm import HexAddress
+from web3 import Web3
 
 
 def _get_latest_version(package_name: str) -> str:
@@ -152,13 +152,6 @@ def decode_evm_script(
         return [repr(err)]
 
     abi_storage = get_abi_cache(ETHERSCAN_API_KEY, specific_net)
-
-    else:
-        abi_provider = ABIProviderCombined(
-            ETHERSCAN_API_KEY,
-            os.path.join(INTERFACES_DIR, abi_spec_json),
-            specific_net=specific_net, retries=3
-        )
 
     calls = []
     called_contracts = defaultdict(lambda: defaultdict(dict))
